@@ -1,0 +1,90 @@
+ARG ALPINE_VERSION="latest"
+
+FROM gautada/alpine:$ALPINE_VERSION as container
+
+# ╭――――――――――――――――――――╮
+# │ METADATA           │
+# ╰――――――――――――――――――――╯
+LABEL source="https://github.com/gautada/logseq-container.git"
+LABEL maintainer="Adam Gautier <adam@gautier.org>"
+LABEL description="LogSeq container."
+
+# ╭――――――――――――――――――――╮
+# │ USER               │
+# ╰――――――――――――――――――――╯
+ARG USER="firefly"
+RUN /usr/sbin/usermod --login $USER --home /home/$USER --move-home alpine
+RUN /usr/sbin/groupmod --new-name $USER alpine
+
+# ╭――――――――――――――――――――╮
+# │ APPLICATION        │
+# ╰――――――――――――――――――――╯
+RUN /sbin/apk add --no-cache php82 php82-phar php82-openssl \
+                             php82-bcmath php82-intl \
+                             php82-curl php82-zip php82-sodium php82-gd \
+                             php82-xml php82-mbstring php82-fileinfo \
+                             php82-iconv php82-session php82-simplexml \
+                             php82-tokenizer php82-xmlwriter php82-dom \
+                             php82-sqlite3 php82-pdo_sqlite
+RUN /bin/rm -f /usr/bin/php \
+ && /bin/ln -fsv /usr/bin/php82 /usr/bin/php \
+ && /usr/bin/curl -sS https://getcomposer.org/installer | \
+    /usr/bin/php -- --install-dir=/usr/local/bin --filename=composer
+
+WORKDIR /opt
+RUN /usr/local/bin/composer create-project grumpydictator/firefly-iii --no-dev \
+                  --prefer-dist firefly 6.0.10
+COPY firefly.env /opt/firefly/.env
+RUN /bin/chown firefly:www-data -R /opt/firefly
+
+RUN /sbin/apk add --no-cache nginx
+# RUN /sbin/apk add --no-cache \
+#     --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing php8-fpm
+RUN /sbin/apk add --no-cache php82-fpm
+RUN /bin/rm /etc/nginx/http.d/default.conf
+COPY firefly.conf /etc/nginx/http.d/firefly.conf
+
+RUN composer create-project firefly-iii/data-importer \
+    --no-dev --prefer-dist data-importer 1.2.2
+# RUN git clone https://github.com/firefly-iii/data-importer.git importer
+
+# ╭――――――――――――――――――――╮
+# │ STANDARD CONFIG    │
+# ╰――――――――――――――――――――╯
+# COPY backup /etc/container/backup
+# COPY podman.health /etc/container/health.d/podman.health
+COPY entrypoint /etc/container/entrypoint
+COPY privileges /etc/container/privileges
+COPY setup /etc/container/setup
+
+# ╭――――――――――――――――――――╮
+# │ CONTAINER          │
+# ╰――――――――――――――――――――╯
+USER $USER
+WORKDIR /home/$USER
+
+# WORKDIR /opt/firefly
+# RUN /usr/bin/php artisan firefly-iii:upgrade-database \ 
+#  && /usr/bin/php artisan firefly-iii:correct-database \
+#  && /usr/bin/php artisan firefly-iii:report-integrity \
+#  && /usr/bin/php artisan passport:install --force
+
+# USER root
+# RUN /bin/chown firefly:www-data -R /opt/firefly
+# RUN /bin/chmod 777 /opt/firefly/firefly.sql
+# RUN /bin/chmod 777 /opt/firefly
+
+#╭――――――――――――――――――――╮
+# │FINAL CONTAINER     │
+# ╰――――――――――――――――――――╯
+FROM scratch
+COPY --from=container / /
+ENTRYPOINT ["/usr/bin/container-entrypoint"]
+VOLUME /mnt/volumes/backup
+VOLUME /mnt/volumes/configmaps
+VOLUME /mnt/volumes/container
+VOLUME /mnt/volumes/secrets/namespace
+VOLUME /mnt/volumes/secrets/container
+EXPOSE 8080/tcp
+USER firefly
+WORKDIR /home/firefly

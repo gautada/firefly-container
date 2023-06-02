@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  firefly:
+    build:
+      args:
+        ALPINE_VERSION: "latest"
+        CONTAINER_VERSION: "0.0.1"
+      context: .
+      dockerfile: container.build
+      no_cache: true
+      tags:
+        - "firefly:dev"
+        - "gautada/firefly:dev"
+    image: "firefly:dev"
+    hostname: "firefly"
+    ports:
+      - "8080:8080"
+    volumes:
+      - "container:/mnt/volumes/container"
+      - "backup:/mnt/volumes/backup"
+volumes:
+  container:
+    external: true
+    name: Container
+  backup:
+    external: true
+    name: Backup
+

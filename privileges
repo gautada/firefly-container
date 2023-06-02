@@ -1,0 +1,13 @@
+%privileged ALL = (ALL) NOPASSWD: /usr/sbin/crond
+
+%privileged ALL = (ALL) NOPASSWD: /sbin/apk
+
+%privileged ALL = (ALL) NOPASSWD: /usr/sbin/nginx
+
+%privileged ALL = (ALL) NOPASSWD: /usr/bin/nano
+
+%privileged ALL = (ALL) NOPASSWD: /usr/bin/php
+
+%privileged ALL = (ALL) NOPASSWD: /usr/local/bin/composer
+
+%privileged ALL = (ALL) NOPASSWD: /usr/sbin/php-fpm82
