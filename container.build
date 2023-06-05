@@ -46,6 +46,7 @@ RUN /bin/ln -fsv /etc/container/firefly.env /opt/firefly/.env \
 COPY firefly.env /mnt/volumes/configmaps/firefly.env
 COPY firefly.conf /mnt/volumes/configmaps/firefly.conf
 
+RUN chmod 777 /mnt/volumes/container
 # ╭――――――――――――――――――――╮
 # │ STANDARD CONFIG    │
 # ╰――――――――――――――――――――╯
