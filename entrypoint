@@ -16,7 +16,7 @@ container_entrypoint() {
  FFDB_PATH="/mnt/volumes/container/ffdb"
  FFDB_FILE="firefly.sql"
  if [ ! -f "$FFDB_PATH/$FFDB_FILE" ] ; then
-  /bin/mkidr -p $FFDB_PATH/
+  /bin/mkdir -p $FFDB_PATH/
   /bin/touch $FFDB_PATH/$FFDB_FILE
   cd /opt/firefly
   /usr/bin/php artisan firefly-iii:upgrade-database
