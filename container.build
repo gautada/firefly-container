@@ -37,7 +37,8 @@ RUN /bin/rm -f /usr/bin/php \
 WORKDIR /opt
 RUN /usr/local/bin/composer create-project grumpydictator/firefly-iii --no-dev \
                   --prefer-dist firefly $CONTAINER_VERSION
-RUN /bin/ln -fsv /etc/container/firefly.env /opt/firefly/.env \
+RUN /bin/rm /opt/firefly/.env \
+ && /bin/ln -fsv /etc/container/firefly.env /opt/firefly/.env \
  && /bin/ln -fsv /mnt/volumes/configmaps/firefly.env /etc/container/firefly.env \
  && /bin/chown firefly:www-data -R /opt/firefly \
  && /bin/rm /etc/nginx/http.d/default.conf \

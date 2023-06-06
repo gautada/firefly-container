@@ -13,6 +13,8 @@ container_version() {
 }
 
 container_entrypoint() {
+ 
+ source /opt/firefly/.env
  FFDB_PATH="/mnt/volumes/container/ffdb"
  FFDB_FILE="firefly.sql"
  if [ ! -f "$FFDB_PATH/$FFDB_FILE" ] ; then
