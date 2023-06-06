@@ -20,7 +20,7 @@ RUN /usr/sbin/groupmod --new-name $USER alpine
 # │ APPLICATION        │
 # ╰――――――――――――――――――――╯
 ARG CONTAINER_VERSION="6.0.11"
-RUN /sbin/apk add --no-cache apache2 \
+RUN /sbin/apk add --no-cache nginx \
                              php82 php82-phar php82-openssl \
                              php82-bcmath php82-intl \
                              php82-curl php82-zip php82-sodium php82-gd \
@@ -43,6 +43,7 @@ RUN /bin/ln -fsv /etc/container/firefly.env /opt/firefly/.env \
  && /bin/rm /etc/nginx/http.d/default.conf \
  && /bin/ln -fsv /etc/container/firefly.conf /etc/nginx/http.d/firefly.conf \
  && /bin/ln -fsv /mnt/volumes/configmaps/firefly.conf /etc/container/firefly.conf
+ # && ls -l
 
 COPY firefly.env /mnt/volumes/configmaps/firefly.env
 COPY firefly.conf /mnt/volumes/configmaps/firefly.conf

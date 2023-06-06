@@ -29,4 +29,5 @@ container_entrypoint() {
  # tail -f /dev/null
  sudo /usr/sbin/php-fpm82
  sudo nginx -g "daemon off;"
+ # tail -f /dev/null
 }
