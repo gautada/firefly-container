@@ -10,4 +10,6 @@
 
 %privileged ALL = (ALL) NOPASSWD: /usr/local/bin/composer
 
+%privileged ALL = (ALL) NOPASSWD: /bin/cat
+
 %privileged ALL = (ALL) NOPASSWD: /usr/sbin/php-fpm82
