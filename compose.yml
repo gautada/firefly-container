@@ -5,6 +5,7 @@ services:
       args:
         ALPINE_VERSION: "latest"
         CONTAINER_VERSION: "6.0.11"
+        FIDI_VERSION: "1.3.0"
       context: .
       dockerfile: container.build
       no_cache: true

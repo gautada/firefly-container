@@ -20,6 +20,9 @@ RUN /usr/sbin/groupmod --new-name $USER alpine
 # │ APPLICATION        │
 # ╰――――――――――――――――――――╯
 ARG CONTAINER_VERSION="6.0.11"
+ARG FIREFLY_VERSION=$CONTAINER_VERSION
+ARG FIDI_VERSION="1.3.0"
+
 RUN /sbin/apk add --no-cache nginx \
                              php82 php82-phar php82-openssl \
                              php82-bcmath php82-intl \
@@ -36,8 +39,12 @@ RUN /bin/rm -f /usr/bin/php \
 
 WORKDIR /opt
 RUN /usr/local/bin/composer create-project grumpydictator/firefly-iii --no-dev \
-                  --prefer-dist firefly $CONTAINER_VERSION
-RUN /bin/ln -fsv /opt/firefly/public /opt/firefly/public/budget \
+                  --prefer-dist firefly $FIREFLY_VERSION \
+ && /usr/local/bin/composer create-project firefly-iii/data-importer --no-dev \
+                  --prefer-dist data-importer $FIDI_VERSION
+
+COPY index.html /var/www/localhost/htdocs/index.html
+RUN /bin/ln -fsv /opt/firefly/public /var/www/localhost/htdocs/budget \
  && /bin/rm /opt/firefly/.env \
  && /bin/ln -fsv /etc/container/firefly.env /opt/firefly/.env \
  && /bin/ln -fsv /mnt/volumes/configmaps/firefly.env /etc/container/firefly.env \
@@ -45,9 +52,15 @@ RUN /bin/ln -fsv /opt/firefly/public /opt/firefly/public/budget \
  && /bin/rm /etc/nginx/http.d/default.conf \
  && /bin/ln -fsv /etc/container/firefly.conf /etc/nginx/http.d/firefly.conf \
  && /bin/ln -fsv /mnt/volumes/configmaps/firefly.conf /etc/container/firefly.conf
- # && ls -l
+
+RUN /bin/ln -fsv /opt/data-importer/public /var/www/localhost/htdocs/fidi \
+ && /bin/rm /opt/data-importer/.env \
+ && /bin/ln -fsv /etc/container/fidi.env /opt/data-importer/.env \
+ && /bin/ln -fsv /mnt/volumes/configmaps/fidi.env /etc/container/fidi.env \
+ && /bin/chown firefly:www-data -R /opt/data-importer
 
 COPY firefly.env /mnt/volumes/configmaps/firefly.env
+COPY fidi.env /mnt/volumes/configmaps/fidi.env
 COPY firefly.conf /mnt/volumes/configmaps/firefly.conf
 
 RUN chmod 777 /mnt/volumes/container
