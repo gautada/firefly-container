@@ -1,0 +1,21 @@
+{
+  "actions" : {
+    "build" : {
+      "enabled" : true,
+      "path" : "\/Users\/mada\/.config\/nova\/container-build"
+    },
+    "clean" : {
+      "enabled" : true,
+      "path" : "\/Users\/mada\/.config\/nova\/container-clean"
+    },
+    "run" : {
+      "enabled" : true,
+      "path" : "\/Users\/mada\/.config\/nova\/container-run"
+    }
+  },
+  "buildBeforeRunning" : true,
+  "environment" : {
+    "NOVA_CONTAINER_RUN" : "\/bin\/zsh"
+  },
+  "persistent" : true
+}
