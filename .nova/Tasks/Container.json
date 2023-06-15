@@ -17,5 +17,6 @@
   "environment" : {
     "NOVA_CONTAINER_RUN" : "\/bin\/zsh"
   },
+  "openLogOnRun" : "start",
   "persistent" : true
 }
